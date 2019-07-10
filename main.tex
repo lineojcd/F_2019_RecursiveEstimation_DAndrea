@@ -1,0 +1,1030 @@
+%generation of assignment and solution in one .tex file. make sure that write18 is activated(--enable-write18 for example as you call pdflatex.exe)
+\gdef\conditionmacro{1}
+\ifx\conditionmacro\undefined 
+%write long version first, let latex do the short version with the normal writing procedure
+\immediate\write18{%
+	pdfLaTeX --jobname="main_long"
+	\gdef\string\conditionmacro{1}\string\input\space\jobname
+}%
+\immediate\write18{%
+	pdfLaTeX --jobname="main_long"
+	\gdef\string\conditionmacro{1}\string\input\space\jobname
+}%
+
+\gdef\conditionmacro{2}
+
+\immediate\write18{%
+	pdfLaTeX --jobname="main_short"
+	\gdef\string\conditionmacro{2}\string\input\space\jobname
+}%
+
+%\expandafter\stop
+\fi
+%---------------------------------------------------------------------------
+
+%Use this to embrace all parts of the summary that should only shop up in the long version
+%\ifnum\conditionmacro=1 % content \fi
+
+\newcommand{\longversion}[1]{\ifnum\conditionmacro=1 #1 \fi}
+
+\ifnum\conditionmacro=1
+\documentclass[10pt,a4paper]{scrartcl}
+\fi
+\ifnum\conditionmacro=2
+\documentclass[6pt,a4paper]{scrartcl}
+\fi
+
+\usepackage[english]{babel}
+
+\input{../Headerfiles/Packages}
+\input{../Headerfiles/Titles}
+\input{../Headerfiles/Commands}
+\graphicspath{{Pictures/}}
+\parindent 0pt
+
+\newtheorem{define}{Definition}
+\newtheorem{theorem}{Theorem}
+
+\title{Recursive Estimation}
+\author{GianAndrea Müller}
+
+\begin{document}
+\begin{multicols*}{4}
+\maketitle
+\tableofcontents
+\end{multicols*}
+
+\begin{multicols*}{2}
+
+\longversion{
+\section{Probability}
+
+\subsection{Discrete Random Variables (DRV)}
+
+\begin{TDefinitionTable*}
+$\mathcal{X}$&set of all possible outcomes\\
+$p_x(\cdot)$&probability density function (PDF)\\
+\end{TDefinitionTable*}
+
+\begin{enumerate}
+\item $p_x(\bar{x})\geq 0\ \forall\bar{x}\in\mathcal{X}$
+\item $\sum\limits_{\bar{x}\in\mathcal{X}}p_x(\bar{x})=1$
+\end{enumerate}
+
+\begin{define}
+$p_x(\cdot)$ and $\mathcal{X}$ define a \textbf{discrete random variables} (DRV) $x$.
+\end{define}
+
+The probability that a random variable $x$ is equal to some value $\bar{x}\in\mathcal{X}$ is $p_x(\bar{x})$. This is written as $Pr(x=\bar{x})=p_x(\bar{x})$.
+
+\begin{define}
+The \textbf{joint PDF} $p_{xy}(\cdot,\cdot)$ is a real valued function that satisfies:
+
+\begin{enumerate}
+\item $p_{xy}(\bar{x},\bar{y})\geq 0\ \forall\bar{x}\in\mathcal{X},\ \forall y\in\mathcal{Y}$,
+\item $\sum\limits_{\bar{x}\in\mathcal{X}}\sum\limits_{y\in\mathcal{Y}}p_{xy}(\bar{x},\bar{y})=1$.
+\end{enumerate}
+\end{define}
+
+\begin{define}
+\textbf{Marginalization} or \textbf{Sum Rule} axiom:
+
+Given $p_{xy}(\cdot,\cdot)$ define $p_x(\bar{x}):=\sum\limits_{\bar{y}\in\mathcal{Y}}p_{xy}(\bar{x},\bar{y})$.
+\end{define}
+
+\begin{define}
+\textbf{Conditioning} or \textbf{Product Rule} axiom:
+
+Given $p_{xy}(\cdot,\cdot)$ the PDF of $y$ is $p_{x|y}(\bar{x}|\bar{y}):=\frac{p_{xy}(\bar{x},\bar{y})}{p_y(\bar{y})}$ when $p_y(\bar{y})\neq 0$.
+\end{define}
+
+\begin{itemize}
+\item Sum rule applied to a conditional PDF:
+
+Given $p_{xy|z}(\bar{x},\bar{y}|\bar{z}),p_{x|z}(\bar{x}|\bar{z}:=\sum\limits_{\bar{y}\in\mathcal{Y}}p_{xy|z}(\bar{x},\bar{y}|\bar{z})$.
+\item Short form: $p(x|y)$
+\item Product rule usually written as: $p(x,y) = p(x|y)p(y) =p(y|x)p(x)$
+\end{itemize}
+
+\begin{define}
+\textbf{Total Probability Theorem:}
+
+\mportant{$p_x(\bar{x})=\sum\limits_{\bar{y}\in\mathcal{Y}}p_{x|y}(\bar{x}|\bar{y})p_y(\bar{y})$}.
+\end{define}
+
+\subsubsection{Generalization for multiple variables}
+
+\begin{define}
+\textbf{Marginalization}
+
+\important{$p_x(\bar{x})=\sum\limits_{\bar{y}\in\mathcal{Y}}p_{xy}(\bar{x},\bar{y})$}
+
+as a short form of:
+
+\mportant{$p_{x_1,\ldots,x_N}(\bar{x}_1,\ldots,\bar{x}_N)=\sum\limits_{(\bar{y}_1,\ldots,\bar{y}_L)\in\mathcal{Y}}p_{x_1,\ldots,x_N}(\bar{x}_1,\ldots,\bar{x}_N,\bar{y}_1,\ldots,\bar{y}_L)$.}
+\end{define}
+
+\begin{define}
+\textbf{Conditioning}
+
+\important{$p(x,y) = p(x|y)p(y)$}
+
+as a short form of:
+
+\mportant{$p(x_1,\ldots,x_N,y_1,\ldots,y_L)=p(x_1,\ldots,x_N|y_1,\ldots,y_L)p(y_1,\ldots,y_L)$}
+\end{define}
+
+\begin{define}
+Random variables $x$ and $y$ are said to be \textbf{independent} if $p(x|y)=p(x)$. Equivalently: $p(x,y)=p(x)p(y)$.
+\end{define}
+
+\begin{define}
+Random variables are said to be \textbf{conditionally independent} if: $p(x|y,z)=p(x|z)$. Knowledge of $z$ makes $x$ and $y$ independent.
+\end{define}
+
+\subsection{Continuous Random Variables (CRV)}
+
+\begin{TDefinitionTable*}
+$\mathcal{X}$&subset of the real line\\
+$p(\cdot)$&PDF
+\end{TDefinitionTable*}
+
+\begin{enumerate}
+\item $p_x(\bar{x})\geq 0\ \forall\bar{x}\in\mathcal{X}$
+\item $\int_{\mathcal{X}}p_x(\bar{x})d\bar{x}=1$
+\end{enumerate}
+
+\begin{define}
+The \textbf{probability of being in an interval} is:
+
+\mportant{$Pr(x\in[a,b]):=\int_a^bp_x(\bar{x})d\bar{x}$}
+\end{define}
+
+\subsection{Expectation}
+
+\begin{define}
+The \textbf{expected value} of a random variable is defined as:
+
+\mportant{$\underset{x}{E}[x]:=\sum\limits_{\bar{x}\in\mathcal{X}}\bar{x}p_x(\bar{x})$}
+\end{define}
+
+\begin{itemize}
+\item $\underset{x}{E}[ax+b]=a\underset{x}{E}[x]+b$ where $a,b$ constant
+\item $\underset{x}{E}[g(x)]=\sum\limits_{\bar{x}\in\mathcal{X}}p_x(\bar{x})g(\bar{x})$.
+\item For conditional PDF's:
+\mportant{$\underset{x|y}{E}[x|y=\bar{y}]:=\sum\limits_{\bar{x}\in\mathcal{X}}\bar{x}p_{x|y}(\bar{x}|\bar{y})$}
+\end{itemize}
+
+
+
+\subsubsection{Multi-variable generalizations}
+
+If $x$ is a vector:
+
+\mportant{$\underset{x}{E}[x]=\sum\limits_{\bar{x}\in\mathcal{X}}\bar{x}p_x(\bar{x})=\sum\limits_{\bar{x_1}\in\mathcal{X}}\cdots\sum\limits_{\bar{x}_N\in\mathcal{X}}[\bar{x}_1,\ldots,\bar{x}_N]^Tp_{(x_1,\ldots,x_N)}(\bar{x}_1,\ldots,\bar{x}_N]$}
+
+Given $g(x):\mathbb{R}^N\rightarrow \mathbb{R}$ and DRV $x$
+
+\mportant{$\underset{x}{E}[g(x)]=\sum\limits_{\bar{x}\in\mathcal{X}}g(\bar{x})p_x(\bar{x})=\sum\limits_{\bar{x}_1\in\mathcal{X}}\cdots\sum\limits_{\bar{x}_N\in\mathcal{X}}g(\bar{x}_1,\ldots,\bar{x}_N)p_{(x_1,\ldots,x_N)}(\bar{x}_1,\ldots,\bar{x}_N)$}
+
+If the two random variables are \textbf{independent}, then:
+
+\mportant{$\underset{xy}{E}[g(x,y)]=\sum\limits_{\bar{y}\in\mathcal{Y}}\sum\limits_{\bar{X}\in\mathcal{X}}g(\bar{x},\bar{y})p_{xy}(\bar{x},\bar{y})=\sum\limits_{\bar{y}\in\mathcal{Y}}\sum\limits_{\bar{x}\in\mathcal{X}}g(\bar{x},\bar{y})p_{xy}(\bar{x},\bar{y})=\sum\limits_{\bar{y}\in\mathcal{Y}}\sum\limits_{\bar{x}\in\mathcal{X}}g(\bar{x},\bar{y})p_x(\bar{x})p_y(\bar{y})=\underset{y}{E}[\underset{x}{E}[g(x,y)]]$}
+
+\textbf{Mean and Variance}:
+
+\begin{define}
+$\underset{x}{E}[x]$ is called the \textbf{mean}, generally a vector.
+\end{define}
+
+\begin{define}
+$\underset{x}{\text{Var}}[x]:=\underset{x}{E}\left[\left(x-\underset{x}{E}[x]\right)\left(x-\underset{x}{E}[x]\right)^T\right]$ is called the \textbf{variance}, generally a matrix.
+\end{define}
+
+\textbf{Linerarity:}
+
+\mportant{$\underset{xy}{E}[x+y]=\sum\limits_{\bar{y}\in\mathcal{Y}}\sum\limits_{\bar{x}\in\mathcal{X}}(\bar{x}+\bar{y})p_{xy}(\bar{x},\bar{y})=\sum\limits_{x\in\mathcal{x}}\bar{x}\sum\limits_{\bar{y}\in\mathcal{Y}}p_{xy}(\bar{x},\bar{y})+\sum\limits_{\bar{y}\in\mathcal{Y}}\bar{y}\sum\limits_{\bar{x}\in\mathcal{X}}p_{xy}(\bar{x},\bar{y})=\underset{x}{E}[x]+\underset{y}{E}[y]$}
+
+\textbf{Law of Total Expectation:}
+
+\mportant{$\underset{y}{E}[\underset{x|y}{E}[x]]=\sum\limits_{\bar{y}\in\mathcal{Y}}p_y(\bar{y})\left(\sum\limits_{\bar{x}\in\mathcal{X}}\bar{x}p_{x|y}(\bar{x}|\bar{y})\right)=\sum\limits_{\bar{x}\in\mathcal{X}}\bar{x}\sum\limits_{\bar{y}\in\mathcal{Y}}p_{x|y}(\bar{x}|\bar{y})p_y(\bar{y})=\sum\limits_{\bar{x}\in\mathcal{X}}\bar{x}p_x(\bar{x})=\underset{x}{E}[x]$}
+}%longversion bracket
+
+\section{Basics}
+
+\sbss{
+\myspic{0.7}{Pictures/InputOutput}
+}{
+\begin{TDefinitionTable*}
+$u$&known input\\
+$z$&measured output\\
+$v$&process noise\\
+$w$&sensor noise\\
+$x$&internal state\\
+\end{TDefinitionTable*}
+}
+
+\mportable{$x(k)$&$=q_{k-1}(x(k-1),u(k-1),v(k-1))$\\
+$z(k)$&$=h_k(x(k),w(k))$}
+
+where $x(0),\ \{v(\cdot)\},\{w(\cdot)\}$ have a probabilistic description.
+
+\subsection{Sampling a Distribution}
+
+\subsubsection{A1 Single Variable}
+
+Given a desired PDF $\hat{p}_x$ for a DRV $x$, samples $\bar{x}$ can be generated via the following procedure:
+
+\begin{enumerate}
+\item Calculate the CDF: $\hat{F}(\bar{x}):=\sum\limits_{i=-\infty}^\infty \hat{p}_x(i)$
+
+Note that the range of $\hat{F}(\bar{x})$ is $(0,1)$.
+\item Sample $\bar{u}$ from a uniform distribution in $(0,1)$.
+\item Solve $\hat{F}_x(\bar{x}-1)<\bar{u}$ and $\bar{u}\leq \hat{F}_x(\bar{x})$ for $\bar{x}$.
+\item The resulting $\bar{x}$ is sampled from the DRV $x$ with pdf $\hat{p}_x$.
+\end{enumerate}
+
+\myspic{0.8}{Sampling}
+
+\subsubsection{A2 Multiple DRVs}
+
+\paragraph{Option 1: For finite $\mathcal{X}$ and $\mathcal{Y}$}
+
+\begin{enumerate}
+\item Let $N_x$ and $N_y$ be the number of elements in $\mathcal{X}$ and $\mathcal{Y}$. Define $\mathcal{Z}=\{1,2,\ldots,N_xN_y\}$.
+\item Define
+\mportant{$\hat{p}_z(1)=\hat{p}_{xy}(1,1),\ \hat{p}_z(2)=\hat{p}_{xy}(1,2),\ldots,\hat{p}_z(N_xN_y)=\hat{p}_{xy}(N_x,N_y)$}
+\item Apply A1.
+\end{enumerate}
+
+\paragraph{Option 2: For infinite numbers of elements}
+
+\begin{enumerate}
+\item Decompose $\hat{p}_{xy}(\bar{x},\bar{y})=\hat{p}_{x|y}(\bar{x}|\bar{y})\hat{p}_y(\bar{y}$
+\item Apply A1 to first get $\bar{y}$ via $\hat{p}_y(\bar{y})$.
+\item Apply A1 to get $\bar{x}$ via $\hat{p}_{x|y}(\bar{x}|\bar{y}$ with $\bar{y}$ now fixed.
+
+Note that the independence of the uniform number generator between successive calls is key.
+\end{enumerate}
+
+\subsubsection{A3 One continuous random variable}
+
+\begin{enumerate}
+\item Calculate the CDF $\hat{F}_x(\bar{x}):=\int_{-\infty}^{\bar{x}}\hat{p}_x(\lambda)d\lambda$
+\item Let $u$ be uniform on $(0,1)$.
+\item Let $\bar{x}$ be any solution to $\bar{u}=\hat{F}_x(\bar{x})$.
+\item $x$ has PDF $\hat{p}_x$.
+\end{enumerate}
+
+\subsubsection{A4 Multiple CRVs}
+
+Analog to option 2 of A2.
+
+\subsection{Change of Variables}
+
+\subsubsection{DRV}
+
+Let $p_y$ be given, $x = g(y)$. The goal is to calculate $p_x$.
+
+\important{$p_x(\bar{x})=\sum\limits_{\bar{y}\in\mathcal{Y}:g(\bar{x}=\bar{x}}p_y(\bar{y})$}
+
+\subsubsection{CRV}
+
+Let $x=g(y)$, $g(y)$ strictly monotonic and continuously differentiable and $p_y$ continuous.
+
+\important{$p_x(\bar{x})=\frac{p_y(\bar{y}}{\frac{ dg}{dy}(\bar{y})}$}
+
+This result in an alternative way of sampling:
+
+Given a desired PDF $\hat{p}_x$ and a method for sampling $p_y$ find a function $x=g(y)$ such that
+
+\mportant{$\frac{dg}{dy}(\bar{y})=\frac{p_y(\bar{y}}{\hat{p}_x(g(\bar{y}))}$}
+
+Equivalently solve $\frac{d\bar{x}}{d\bar{y}}=\frac{p_y(\bar{y})}{\hat{p}_x(\bar{x})}$
+
+\section{Bayes' Theorem}
+
+\importname{Bayes' Theorem}{$p(x|z)=\frac{p(y|z)p(x)}{p(z)}$}
+
+\begin{TDefinitionTable*}
+$x$&unknown quantity of interest (state)\\
+$p(x)$&prior belief of state\\
+$z$&observation related to state\\
+$p(z|x)$&observation model\\
+$p(x|z)$&posterior belief of state\\
+$p(z)$&probability of the observation\\
+\end{TDefinitionTable*}
+
+\subsection{Generalization to multiple observations}
+
+\begin{itemize}
+\item $N$ observations: $z_1,\ldots,z_n$
+\item Often conditional independence is assumed 
+\mportant{$p(z_1,\ldots,z_N|x)=p(z_1|x)\cdots p(z_n|x)$}
+\end{itemize}
+
+\important{$\underbrace{p(x|z_1,\ldots,z_N)}_{\text{posterior}}=\frac{\overbrace{p(x)}^{\text{prior}}\overbrace{\prod_i p(z_i|x)}^{\text{observation likelihood}}}{\underbrace{p(z_1,\ldots,z_N)}_{\text{normalization}}}$}
+
+\mportname{Normalization}{$p(z_1,\ldots,z_N)=\sum\limits_{x\in\mathcal{X}} p(x)\prod\limits_i p(z_i|x)$}
+
+\section{Bayesian Tracking}
+
+\mportable{$x(k)$&$q_{k-1}(x(k-1),v(k-1)),\quad k=1,2,\ldots$\\
+$z(k)$&$h_k(x(k),w(k))$}
+
+\begin{TDefinitionTable*}
+$x(k)\in\mathcal{X}$&State\\
+$z(k)$&Measurement\\
+\end{TDefinitionTable*}
+
+Assume $p(x(k-1)|z(1:k-1))$ is known. For $k=1$: $p(x(0))$.
+
+\begin{enumerate}
+\item \textbf{Prior update:} Forward prediction of the state estimate using the process model.
+
+\important{$p(x(k)|z(1:k-1))=\sum\limits_{x(k-1)\in\mathcal{X}}\overbrace{p(x(k)|x(k-1))}^{\text{process model}}\overbrace{p(x(k-1)|z(1:k-1))}^{\text{previous iteration}}$}
+
+\item \textbf{Measurement update:} Combination of the prior with observations/measurements.
+
+\important{$p_{x(k)|z(1:k)}(\bar{x}(k)|\bar{z}(1:k))=\frac{\overbrace{p_{z(k)|x(k)}(\bar{z}(k)|\bar{x}(k))}^{\text{measurement model}}\overbrace{p_{x(k)|z(1:k-1)}(\bar{x}(k)|\bar{z}(1:k-1))}^{\text{prior}}}{\underbrace{\sum\limits_{i\in\mathcal{X}}p_{z(k)|x(k)}p_{z(k)|x(k)}(\bar{z}(k)|i)p_{x(k)|z(1:k-1)}(i|\bar{z}(1:k-1))}_{\text{normalization}}}$}
+\end{enumerate}
+
+\subsection{Computer Implementation}
+
+\begin{itemize}
+\item Enumerate the state $\mathcal{X}=\{0,1,\ldots,N-1\}$
+\item Define $\vec{a}_{k|k}^i:=p_{x(k)|z(1:k)}(i|\bar{z}(1:k)),\ i=0,\ldots,N-1$, an array with $N$ elements that we use to store the posterior PDF at time $k$.
+\item $\vec{a}_{k|k-1}^i:=p_{x(k)|z(1:k-1)}(i|\bar{z}(1:k-1)),\ i=0,\ldots,N-1$ to store the prior PDF at time $k$
+\item Algorithm
+\begin{enumerate}
+\item Initialization, $k=0$
+\mportant{$\vec{a}_{0|0}^i=p_{x(0)}(i),\ i=0,\ldots, N-1$}
+\item Recursion, $k>0$
+\mportable{
+$\vec{a}_{k|k-1}^i$&$=\sum\limits_{j=0}^{N-1}p_{x(k)|x(k-1)}(i|j)\vec{a}_{k-1|k-1}^j,\ i=0,\ldots,N-1$\\
+$\vec{a}_{k|k}^i$&$=\frac{p_{z(k)|x(k)}(\bar{z}(k)|i)\vec{a}_{k|k-1}^i}{\sum\limits_{j=0}^{N-1}p_{z(k)|x(k)}(\bar{z}(k)|j)\vec{a}_{k|k-1}^j}\ i=0,\ldots,N-1$}
+\end{enumerate}
+\item Note that $p_{x(k)|x(k-1)}(i|j)$ can be calculated from $x(k)=q_{k-1}(x(k-1),v(k-1))$ and $p_{v(k-1)}(\bar{v}(k-1))$. Similarly, $p_{z(k)|x(k)}(\bar{z}(k)|i)$ can be calculated from $z(k)=h_k(x(k),w(k))$ and $p_{w(k)}(\bar{w}(k))$.
+\end{itemize}
+
+\section{Extracting Estimates from Probability Distributions}
+
+\subsection{Maximum Likelihood (ML)}
+
+\mportant{$\hat{x}^{ML}:=$arg$\max\limits_{\bar{x}\in\mathcal{X}}p_{z|x}(\bar{z}|\bar{x}$}
+
+\begin{TDefinitionTable*}
+$p_{z|x}(\bar{z}|\bar{x})$&Observation model / likelihood function\\
+\end{TDefinitionTable*}
+
+\subsubsection{Generalization}
+
+\mportant{$z=Hx+w,\quad H=\begin{bmatrix}
+H_1\\H_2\\\vdots\\H_m
+\end{bmatrix}\in\mathbb{R}^{m\times n},\quad H_i=\begin{bmatrix}
+h_{i1}&\cdots&h_{in}
+\end{bmatrix},\ h_{ij}\in\mathbb{R}$}
+
+Let $g$ be a function mapping $w\in\mathbb{R}^m$ to $z\in\mathbb{R}^m$, $z=g(w)$ and we assume that: 
+
+\mportant{$\det\left(\frac{\partial g}{\partial w}(w)\right)\neq 0\ \forall w$}
+
+Also we assume that $z=g(w)$ has a unique solution for $w$ in terms of $z$:
+
+\mportant{$p_z(\bar{z})=p_w(h(\bar{z}))\left|\det\left(\frac{\partial g}{\partial w}(h(\bar{z}))\right)\right|^{-1}$}
+
+Finally the maximum likelihood estimator becomes 
+
+\important{$\bar{x}=(H^TH)^{-1}H^T\bar{z}$}
+
+\subsection{Maximum a Posteriori (MAP)}
+
+\mportant{$p_{x|z}(\bar{x}|\bar{z})=\frac{p_{z|x}(\bar{z}|\bar{x})p_x(\bar{x})}{p_z(\bar{z})}$}
+
+\important{$\bar{x}^{MAP}:=$arg$\max\limits_{\bar{x}\in\mathcal{X}}p_{z|x}(\bar{z}|\bar{x})p_x(\bar{x})$}
+
+\subsection{Minimum Mean Squared Error (MMSE)}
+
+\mportable{
+$\hat{x}^{MMSE}$&$:=$arg$\min\limits_{\hat{x}}\underset{x|z}{E}\left[(\hat{x}-x)^T(\hat{x}-x)|\bar{z}\right]$\\
+&$=$arg$\min\limits_{\bar{x}}\left(\hat{x}^T\hat{x}-2\hat{x}^T\underset{x|z}{E}\left[x|\bar{z}\right]+\underset{x|z}{E}\left[x^Tx|\bar{z}\right]\right)$\\
+&$=\underset{x|z}{E}\left[x|\bar{z}\right]$
+}
+
+\subsection{Recursive Least Squares (RLS)}
+
+\mportant{$z(k)=H(k)+w(k)\qquad z(k),w(k)\in\mathbb{R}^m,\ x\in\mathbb{R}^n$}
+
+\begin{itemize}
+\item Prior knowledge: mean and variance of $x$, $\hat{x}_0:=\expe{x}$ and $P_x:=\expe{(x-\hat{x}_0)(x-\hat{x}_0)^T}=\var{x}$ are given.
+\item Measurement noise: zero-mean with known variance. $\expe{w(k)}=0,\ R(k):=\var{w(k)}$
+\item Typically, $n>m$, fewer equations than unknowns at a particular time.
+\end{itemize}
+
+\begin{enumerate}
+\item \textbf{Initialization} $\hat{x}(0)=\hat{x}_0,\ P(0)=P_x=\var{x}$
+\item \textbf{Recursion}
+\begin{itemize}
+\item Observe $\bar{z}(k)$
+\item Update
+
+\mportable{
+$K(k)$&$=P(k-1)H^T(k)(H(k)P(k-1)H^T(k)+R(k))^{-1}$\\
+$\hat{x}(k)$&$=\hat{x}(k-1)+K(k)(\bar{z}(k)-H(k)\hat{x}(k-1))$\\
+$P(k)$&$=(I-K(k)H(k))P(k-1)(I-K(k)H(k))^T+K(k)R(k)K^T(k)$
+}
+\end{itemize}
+\end{enumerate}
+
+The matrices $K(k)$ and $P(k)$ can be pre-computed from the problem data $P_x, \{H(\cdot)\}$ and $\{R(\cdot)\}$.
+
+\section{The Kalman Filter}
+
+\subsection{Model}
+
+\begin{align*}
+x(x)&=A(k-1)x(k-1)+u(k-1)+v(k-1)\\
+z(k)&=H(k)x(k)+w(k)
+\end{align*}
+
+\begin{TDefinitionTable*}
+$x(k)$&state\\
+$u(k)$&known control input\\
+$v(k)$&process noise\\
+$z(k)$&measurement\\
+$w(k)$&sensor noise\\
+\end{TDefinitionTable*}
+
+\subsection{Gaussian Random Variable (GRV)}
+
+\mportant{$p(y)=\frac{1}{(2\pi)^{D/2}\det(\Sigma)^{1/2}}\exp\left(-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(y-\mu)\right)\qquad y\sim\mathcal{N}(\mu,\Sigma)$}
+
+\begin{TDefinitionTable*}
+$\mu\in\mathbb{R}^D$&mean vector\\
+$\Sigma\in\mathbb{R}^{D\times D}$&symmetric, positive definite, variance matrix\\
+\end{TDefinitionTable*}
+
+If $\Sigma$ is diagonal we can say:
+
+\mportant{$p(y)=\prod\limits_{i=1,\ldots,D}\frac{1}{\sqrt{2\pi\sigma^2_i}}\exp\left(-\frac{(y_i-\mu_i)^2}{2\sigma_i^2}\right)$}
+
+\subsubsection{Jointly Gaussian Random Variables}
+
+If the joint random variable $(x,y)$ is a GRV, then $x$ and $y$ are said to be jointly Gaussian Random Variables. If they are additionally independent, then,
+
+\mportant{$p(x,y)=p(x)p(y)=\exp\left(-\frac{1}{2}\left[(x-\mu_s)^T(y-\mu_y)\right]^T\begin{bmatrix}
+\sigma_x^{-1}&0\\0&\Sigma_y^{-1}
+\end{bmatrix}\begin{bmatrix}
+x-\mu_x\\y-\mu_y
+\end{bmatrix}\right)$}
+
+\subsubsection{Properties of GRV}
+
+\begin{itemize}
+\item An affine transformation of a GRV is a GRV
+\item A linear combination of two jointly GRVs is a GRV
+\end{itemize}
+
+\subsection{Problem Formulation}
+
+Application of bayesian tracking to CRVs.
+
+\begin{TDefinitionTable*}
+$m$&measurement / measurement update\\
+$p$&prediction\\
+\end{TDefinitionTable*}
+
+\begin{tabular}{llll}
+\textbf{Init:}&$x_m(0):=x(0)$\\
+\textbf{S1:}&$x_p(k):=A(k-1)x_m(k-1)+u(k-1)+v(k-1)$&\rdelim\}{4}{*}&\multirow{4}{*}{$k=1,2,\ldots$}\\
+\textbf{S2:}&$z_m(k):=H(k)x_p(k)+w(k)$&\\
+&$x_m(k)$ defined via its PDF&\\
+&$p_{x_m(k)}(\zeta):=p_{x_p(k)|z_m(k)}(\zeta|\bar{z}(k))\ \forall\zeta$&
+\end{tabular}
+
+\begin{align*}
+\hat{x}_p(k)=\expe{x_p(k)}\qquad&P_p(k):=\var{x_p(k)}\\
+\hat{x}_m(k)=\expe{x_m(k)}\qquad&P_m(k):=\var{x_m(k)}
+\end{align*}
+
+\begin{itemize}
+\item It can be shown that all auxiliary variables $(x_p, x_m)$ are GRVs.
+\item Using this the mean and the variance can be calculated and lead to the \textbf{Kalman Filter equations} below
+\end{itemize}
+
+\subsection{Kalman Filter Equations}
+
+\begin{tabular}{ll}
+\textbf{Init:}&$x_m(0):=x(0),\ P_m(0)=P_0$\\
+\textbf{S1:}&$x_p(k):=A(k-1)\hat{x}_m(k-1)+u(k-1)$\\
+&$P_p(k)=A(k-1)P_m(k-1)A^T(k-1)+Q(k-1)$\\
+\textbf{S2:}&$P_m(k)=(P^{-1}_p(k)+H^T(k)R^{-1}(k)H(k))^{-1}$\\
+&$\hat{x}_m(k)=\hat{x}_p(k)+P_m(k)H^T(k)R^{-1}(k)(\bar{z}(k)-H(k)\hat{x}_p(k))$
+\end{tabular}
+
+\begin{TDefinitionTable*}
+$P_0$&Variance matrix of the initial state\\
+$Q$&Variance matrix of the noise\\
+$R$&Variance matrix of the disturbance\\
+$H$&Output matrix
+\end{TDefinitionTable*}
+
+\subsubsection{Alternative Formulation}
+
+\begin{align*}
+K(k)&=P_p(k)H^T(k)(H(k)P_p(k)H^T(k)+R(k))^{-1}\\
+\hat{x}_m(k)&=\hat{x}_p(k)+K(k)(\bar{z}(k)-H(k)\hat{x}_p(k))\\
+P_m(k)&=(I-K(k)H(k))P_p(k)\\
+&=(I-K(k)H(k))P_p(k)(I-K(k))^T + K(k)R(k)K^T(k)
+\end{align*}
+
+\section{Kalman Filter as State Observer}
+
+\begin{itemize}
+\item Assumption: Time invariant system
+
+\mportant{$A(k)=A,\ H(k)=H,\ Q(k) = Q,\ R(k) = R$}
+\end{itemize}
+
+\subsection{Asymptotic Properties of the Kalman Filter}
+
+For constant $A,\ H,\ Q,$ and $R$ the KF is still time varying:
+
+\begin{align*}
+P_p(k)&=AP_m(k-1)A^T+Q\\
+K(k)&=P_p(k)H^T(HP_p(k)H^T)+R)^{-1}\\
+P_m(k)&=(I-K(k)H)P_p(k)
+\end{align*}
+
+Thus
+
+\mportant{$P_p(k+1)=AP_p(k)A^T+Q-AP_p(k)H^t(HP_p(k)H^T+R)^{-1}HP_p(k)A^T$}
+
+\begin{itemize}
+\item The Kalman filter's variance might converge or diverge depending on the choice of $A,\ H,\ Q,\ R$ and $P_0$.
+\item In the scalar case the dynamics reduce to:
+
+\mportant{$P_p(k+1)=\underbrace{\frac{a^2rP_p(k)}{h^2P_p(k)+r}+q}_{:=f(P_p(k)}$}
+\end{itemize}
+
+\subsubsection{Steady State Behaviour}
+
+Steady state is reached when $P_\infty = f(P_\infty)$.
+
+The Kalman filter converges to the unique steady-state solution provided that either $|a|<1$ of if $|a|\geq 1,\ h\neq 0,\ q>0$.
+
+\subsection{Detectability}
+
+The pair $(A,H)$ is detectable
+
+\begin{tabular}{@{$\Leftrightarrow\ $}p{0.9\linewidth}}
+For a deterministic LTI system $(x(k)=Ax(k-1),\ z(k)=Hx(k))$, $\lim\limits_{k\rightarrow\infty}z(k)=0\Rightarrow\lim\limits_{k\rightarrow\infty}x(k)=0,\ \forall x_0\in\mathbb{R}^n$.\\
+$\begin{bmatrix}
+A-\lambda I\\H
+\end{bmatrix}$ is full rank for all $\lambda\in\mathbb{C}$ with $|\lambda|\geq 1$ (PBH-Test).\\
+The eigenvalues of $A-LH$ (or equivalently (I-LH)A) can be placed within the unit circle by a suitable choice of the matrix $L\in\mathbb{R}^{n\times m}$.
+\end{tabular}
+
+\vspace{3ex}
+
+The pair $(A,H)$ is observable.
+
+\begin{tabular}{@{$\Leftrightarrow\ $}p{0.9\linewidth}}
+For a deterministic LTI system $(x(k)=Ax(k-1)+u(k-1),\ z(k)=Hx(k))$ knowledge of $z(0:n-1)$ and $u(0:n-1)$ suffices to determine $x(0)$.\\
+rank$\begin{pmatrix}
+H\\HA\\\vdots\\HA^{-n1}
+\end{pmatrix}=n$\\
+$\begin{bmatrix}
+A-\lambda I\\H
+\end{bmatrix}$ is full rank for all $\lambda\in\mathbb{C}$ (PBH-Test)\\
+The eigenvalues of $A-LH$ can be placed arbitrarily by a suitable choice of the matrix $L\in\mathbb{R}^{n\times m}$
+\end{tabular}
+
+Furthermore if $(A,H)$ is detectable but not observable then there exists a state transformation such that 
+
+\mportant{$TA^{-1}=\begin{bmatrix}
+A_{11}&0\\A_{21}&A_{22}
+\end{bmatrix},\quad HT^{-1}=\begin{bmatrix}
+H_1 0
+\end{bmatrix},\quad \text{and } (A_{11},H_1)\text{ observable}$}
+
+\subsubsection{Stabilizability}
+
+Stabilizability is the dual of detectability, that is $(A,B)$ is stabilizable iff $(A^T, B^T)$ is detectable. Controllability is the dual of observability, that is $(A,B)$ is controllable iff $(A^T,B^T)$ is observable.
+
+\subsection{Steady-State Kalman Filter}
+
+\begin{itemize}
+\item[+] Less computational effort.
+\item[+] Simpler implementation.
+\item[-] Only works for convergent variances.
+\end{itemize}
+
+\importname{DARE}{$P_\infty=AP_\infty A^T+Q-AP_\infty H^T(HP_\infty H^T+R)^{-1}HP_\infty A^T$}
+
+\important{$K_\infty=P_\infty H^T(HP_\infty H^T+R)^{-1}$}
+
+\begin{align*}
+\hat{x}(k)&=(I-K_\infty H)A\hat{x}(k-1)+(I-K_\infty H)u(k-1)+K_\infty \bar{z}(k)\\
+&=\hat{A}\hat{x}(k-1)+\hat{B}u(k-1)+K_\infty\bar{z}(k),\quad \hat{x}(0)=x_0
+\end{align*}
+
+The error dynamics can be described as
+
+\mportant{$e(k)=\underbrace{(I-K_\infty H)A)}_{\text{stability important!}}Ae(k-1)+(I-K_\infty H)v(k-1)-K_\infty w(k)$}
+
+\mportant{$E[e(k)]=(I-K_\infty H)AE[e(k-1)]$}
+
+\begin{itemize}
+\item If the filter is initialized with $E[e(0)]=0$ then the expected value of the error remains zero for all time. Otherwise it will be nonzero for all time, but still the filter is stable.
+\item[-] $P_p(k)$ might not converge.
+\item[-] $P_p(k)$ does not converge to the same solution for different $P_p(1)$.
+\item[-] $(I-K_\infty H)A$ might be unstable.
+\end{itemize}
+
+To address the issues above, assume $R>0$ and $Q = GG^T\geq 0$, then the following statements are equivalent:
+
+\begin{enumerate}
+\item $(A,H)$ is detectable and $(A,G)$ is stabilizable.
+\item The DARE has a unique positive semidefinite solution $P_\infty\geq 0$, the resulting $(I-K_\infty H)A$ is stable and
+
+\mportant{$\lim\limits_{k\rightarrow\infty}P_p(k)=P_\infty$ for any initial $P_p(1)\geq 0$ (and hence, any $P_m(0)=P_0\geq 0)$}
+\end{enumerate}
+
+\begin{itemize}
+\item If $Q>0$ then $(A,G)$ is always stabilizable.
+\end{itemize}
+
+\section{Extended Kalman Filter}
+\label{sec:EKF}
+
+Nonlinear discrete-time system:
+
+\begin{align*}
+x(k)&=q_{k-1}(x(k-1),v(k-1))&\qquad E[x(0)]=x_0,\ \text{Var}[x(0)]=P_0\\
+&&E[v(k-1)]=0,\ \text{Var}[v(k-1)]=Q(k-1)\\
+z(k)&=h_k(x(k),w(k))&E[w(k)]=0,\ \text{Var}[w(k)]=R(k)
+\end{align*}
+
+\begin{itemize}
+\item $x(0), \{v(\cdot)\}$ and $\{w(\cdot)\}$ mutually independent.
+\item $q_{k-1}$ continuously differentiable w.r.t. $x(k-1)$ and $v(k-1)$.
+\item $h_k$ continuously differentiable w.r.t. $x(k)$
+\item The known input can be included in the above description by absorbing it in the explicit time dependency of $q_{k-1}(\cdot)$.
+\end{itemize}
+
+\begin{itemize}
+\item \textbf{Initialization} $\hat{x}_m(0)=x_0,\ P_m(0)=P_0$
+\item \textbf{Prior update / Prediction step}
+
+\begin{align*}
+\hat{x}_p(k)&=q_{k-1}(\hat{x}_m(k-1),0)\\
+P_p(k)&=A(k-1)A^T(k-1)+L(k-1)Q(k-1)L^T(k-1)
+\end{align*}
+
+where 
+
+\begin{equation*}
+A(k-1):=\frac{\partial q_{k-1}(\hat{x}_m(k-1),0)}{\partial x}\text{ and }L(k-1):=\frac{\partial q_{k-1}(\hat{x}_m(k-1),0)}{\partial v}
+\end{equation*}
+\item \textbf{A posteriori update / Measurement update step}
+\begin{align*}
+K(k)&=P_p(k)H^T(k)(H(k)P_p(k)H^T(k)+M(k)R(k)M^T(k))^{-1}\\
+\hat{x}_m(k)&=\hat{x}_p(k)+K(k)(\bar{z}(k)-h_k(\hat{x}_p(k),0))\\
+P_m(k)&=(I-K(k)H(k))P_p(k)
+\end{align*}
+
+where
+
+\begin{equation*}
+H(k):=\frac{\partial h_k(\hat{x}_p(k),0)}{\partial x}\text{ and }M(k):=\frac{\partial h_k(\hat{x}_p(k),0)}{\partial w}
+\end{equation*}
+\item $A(k-1), L(k-1), H(k), M(k)$ are obtained from linearization about the current state estimate, and can thus not be computed offline, even if model and noise distributions are known for all $k$.
+\item The above approximations are good as long as the actual state and noise values are close to the points we linearize about. This assumption might be bad, especially when considering gaussian noise, which is actually unbounded.
+\item $\hat{x}_p(k),\hat{x}_m(k),P_p(k),P_m(k)$ no longer capture the true conditional mean and variance of $x(k)$, especially if there are strong non-linearities (it holds for linear systems though).
+\end{itemize}
+
+\subsection{Hybrid Extended Kalman Filter}
+
+\mportname{\\discrete time white noise $v_d[k]$}{$E[v_d[k]]=0$ and $E[v_d[k]v_d^t[k+n]]=Q\delta_d[n]$}
+
+where $\delta[n]$ is the discrete time Dirac pulse.
+
+\mportname{\\continuous time white noise $v(t)$}{$E[v(t)])=0$ and $E[v(t)v^T(t+\tau)]=Q_c\delta(\tau)$}
+
+where $\delta(\tau)$ is the continuous time Dirac pulse.
+
+\begin{itemize}
+\item \textbf{Initialization} $\hat{x}_m[0]=x_0,\ P_m[0]=P_0$
+\item \textbf{Prior update / Prediction step}
+
+Solve
+
+\mportant{$\dot{\hat{x}}=q(\hat{x}(t),0,t),\ $ for $(k-1)T\leq t\leq kT$ and $\hat{x}((k-1)T)=\hat{x}_m(k-1)$}
+
+Then $\hat{x}_p[k]=\hat{x}(kT)$
+
+Solve
+
+\mportant{$\dot{P}(t)=A(t)P(t)+P(t)A^T(t)L(t)Q_cL^T(t)$ for $(k-1)T\leq t\leq kT$ and $P((k-1)T)=P_m(k-1)$}
+
+where
+
+\mportant{$A(t)=\frac{\partial q(\hat{x}(t),0,t)}{\partial x}$ and $L(t)=\frac{\partial q(\hat{x}(t),0,t)}{\partial v}$}
+
+Then $P_p[k]:=P(kT)$
+\item \textbf{A posteriori update / Measurement update step}
+
+Identical to the discrete time EKF, see section \ref{sec:EKF}
+\end{itemize}
+
+\section{Particle Filter}
+
+\begin{align*}
+x(k)&=q_{k-1}(x(k-1),v(k-1))\\
+z(k)&=h_k(x(k),w(k))
+\end{align*}
+
+where $x(0),\{v(\cdot)\},\{w(\cdot)\}$ are mutually independent and can be discrete or continuous random variables.
+
+\subsection{Monte Carlo Sampling}
+
+\subsubsection{Discrete Random Variables}
+
+\begin{TDefinitionTable*}
+$y$&DRV in $\mathcal{Y}=\{1,2,\ldots,\bar{Y}\}$\\
+$p_y$&PDF of $y$\\
+$\{y^1,y^2,\ldots,y^N\}$&collection of $N$ DRVs\\
+$s_i^n$&samples of DRVs\\
+\end{TDefinitionTable*}
+
+\mportant{$s_i^n:=\delta(i-y^n)=\begin{cases}1&\text{ if }y^n=i\\0&\text{ otherwise}\end{cases}$}
+
+\mportant{$E[s_i^n]=\sum\limits_{\bar{y}^n=1}^{\bar{Y}}\delta(i-\bar{y}^n)p_y(\bar{y}^n)=p_y(i)$}
+
+\important{$s_i:=\frac{1}{N}\sum\limits_{n=1}^Ns_i^n$}
+
+then
+
+\important{$\lim\limits_{N\rightarrow\infty}s_i=E[s_i^n]=p_y(i)$ and $p_y\approx\frac{1}{N}\sum\limits_{n=1}^N\bar{s}_i^n$}
+
+\paragraph{Change of variables}
+
+\mportant{$x=g(y)$ with $x\in\mathcal{X}:=g(\mathcal{Y})$}
+
+\important{$p_x(j)=\frac{1}{N}\sum\limits_{n=1}^N\delta(j-g(\bar{y}^n))$}
+
+\paragraph{Joint DRVs}
+
+\important{$p_x(\zeta)\approx\frac{1}{N}\sum\limits_{n=1}^N\delta(\zeta-\bar{x}^n)\ \forall\zeta$}
+
+where $\zeta$ and $\bar{x}^n$ are now vectors and $\delta(\cdot)$ refers to the vector version of the Kronecker delta, thus $\delta$ is one if all entries of its vector argument are zero.
+
+\subsubsection{Continuous Random Variables}
+
+\begin{TDefinitionTable*}
+$y$&CRV\\
+$p_y$&PDF of $y$\\
+$\Delta y$&fixed bin size\\
+$\{y^1,y^2,\ldots,y^n\}$&collection of N CRVs\\
+$s_a^n$&samples of CRVs\\
+\end{TDefinitionTable*}
+
+\mportant{$s_y^n:=\int_a^{a+\Delta y}\delta(\zeta-y^n)d\zeta=\begin{cases}1&\text{ if }a\leq y^n <a+\Delta y\\0&\text{ otherwise}\end{cases}$}
+
+\important{$p_y(\zeta)\approx\frac{1}{N}\sum\limits_{n=1}^N\delta(\zeta-\bar{y}^n),\ \forall\zeta$}
+
+\paragraph{Change of variables}
+
+\mportant{$x=g(y)$ with $x\in\mathcal{X}:=g(\mathcal{Y})$}
+
+\important{$p_x(\zeta)\approx\frac{1}{N}\sum\limits_{n=1}^N\delta(\zeta-g(\bar{y}^n)),\ \forall\zeta$}
+
+\subsection{Particle Filter}
+
+\begin{itemize}
+\item \textbf{Init:} $x_m(0):=x(0)$
+\item \textbf{S1:} $x_p(k):=q_{k-1}(x_m(k-1),v(k-1))$
+\item \textbf{S2:}
+
+\begin{align*}
+z_m(k)&:=h_k(x_p(k),w(k))\\
+x_m(k)&\text{defined via its PDF}\\
+&p_{x_m(k)}(\zeta):=p_{x_p(k)|z_m(k)}(\zeta|\bar{z}(k))\ \forall\zeta
+\end{align*}
+\end{itemize}
+
+\subsubsection{Prior Update}
+
+\begin{TDefinitionTable*}
+$p_{x_m(k-1)}$&PDF of $x_m(k-1)$\\
+$p_{x_p(k)}$&PDF of $x_p(k)$\\
+$\{\bar{x}_m^n(k-1)\}$&$N$ particles\\
+$\bar{v}^n(k-1)$&MC samples of $p_{v(k-1)}$\\
+\end{TDefinitionTable*}
+
+\mportant{$p_{x_m(k-1)}(\zeta)\approx\frac{1}{N}\sum\limits_{n=1}^N\delta(\zeta-\bar{x}_m^n(k-1)),\ \forall\zeta$}
+
+Thus we can find 
+
+\mportant{$p_{x_p(k)}\approx\frac{1}{N}\sum\limits_{n=1}^N\delta(\zeta-\bar{x}_p^n(k)),\ \forall\zeta$}
+
+where 
+
+\mportant{$\bar{x}_p^n(k):=q_{k-1}(\bar{x}_m^n(k-1),\bar{v}^n(k-1)),$ for $n=1,2,\ldots,N$}
+
+\subsubsection{Measurement Update}
+
+\important{$p_{x_m(k)}(\zeta)=p_{x_p(k)|z_m(k)}(\zeta|\bar{z}(k))\approx\sum\limits_{n=1}^N\beta_n\delta(\zeta-\bar{x}_p^n(k)),\ \forall\zeta$}
+
+\mportant{$\beta_n=\alpha p_{z_m(k)|x_p(k)}(\bar{z}(k)|\bar{x}_p^n(k))\qquad\alpha=\left(\sum\limits_{n=1}^Np_{z_m(k)|x_p(k)}(\bar{z}(k)|\bar{x}_p^n(k))\right)^{-1}$}
+
+\paragraph{Resampling}
+
+Repeat $N$ times:
+\begin{itemize}
+\item Select a random number $r$ uniformly on $(0,1)$
+\item Pick particle $\bar{n}$ such that $\sum\limits_{n=1}^{\bar{n}-1}\beta_n < r$ and $\sum\limits_{n=1}^{\bar{n}}\beta_n\geq r$
+\end{itemize}
+
+This gives $N$ new particles $\bar{x}_m^n(k)$ which are a subset of the old particles, which now have equal weights:
+
+\important{$p_{x_m(k)}(\zeta)\approx\frac{1}{N}\sum\limits_{n=1}^N\delta(\zeta-\bar{x}_m^n(k)),\ \forall\zeta$}
+
+\subsubsection{Sample Impoverishment}
+
+\begin{itemize}
+\item Through resampling we only retain a subset of the particles.
+\item This can lead particles to converge to the same one.
+\item A possible remedy is perturbing the particles after resampling
+
+\mportant{$\bar{x}_m^n(k)\leftarrow \bar{x}_m^n(k)+\Delta x^n(k)$}
+
+where $\Delta x^n(k)$ is drawn from a zero-mean, finite-variance distribution.
+\item One possible way of choosing the variance is 
+
+\mportant{$\sigma_i=KE_iN^{-\frac{1}{d}}$}
+
+\begin{TDefinitionTable*}
+$\sigma_i$&standard Deviation of $\Delta x_i^n(k)$\\
+$K$&tuning parameter, typically K$ll$1\\
+$d$&dimension of the state space\\
+$E_i:\max\limits_{n_1,n_2}|\bar{x}_{m,i}^{n_2}(k)-\bar{x}_{m,i}^{n_2}d(k)|$&the maximum inter-sample variability\\
+$N^{-\frac{1}{d}}$&related to the spacing between nodes of a uniform grid\\
+\end{TDefinitionTable*}
+\end{itemize}
+
+\section{Observer-Based Control}
+
+\myspic{0.7}{Pictures/ObserverBasedControl}
+
+\begin{itemize}
+\item The feedback control system resulting from the combination of a stable LTI observer with a stable static-gain controller is stable. If both designs are optimal, the combination of the two is optimal as well (in the sense of minimizing a quadratric cost).
+\end{itemize}
+
+\begin{align*}
+x(k)&=Ax(k-1)+Bu(k-1)+v(k-1)\\
+z(k)&=Hx(k)+w(k)
+\end{align*}
+
+where $v(k-1)$ and $w(k)$ are zero-mean CRVs representing noise.
+
+\begin{itemize}
+\item \textbf{Luenberger observer}
+
+\begin{align*}
+\hat{x}(k)&=A\hat{x}(k-1)+Bu(k-1)+K(\bar{z}(k)-\hat{z}(k))\\
+\hat{z}(k)&=H(A\hat{x}(k-1)+Bu(k-1))
+\end{align*}
+
+where $K$ is a static correction matrix that is to be designed and $A\hat{x}(k-1)+Bu(k-1)$ is what we predict the state should be according to the process mode and the current state estimate.
+\item This observer has the same structure as the steady-state Kalman Filter.
+\item The error $e(k)$ goes to zero as $k\rightarrow\infty$ and if there is no noise iff $(I-KH)A$ is stable.
+\item There exists such a $K$ iff $(A,HA)$ is detectable.
+\item $(A,HA)$ is detectable iff $(A,H)$ is detectable.
+\item Pole placement design: You can use the \verb+place()+ command in Matlab to find $K$ that places the eigenvalues of the error dynamics corresponding to the observable modes at desired locations.
+\end{itemize}
+
+\subsection{Static State-Feedback Control}
+
+\begin{align*}
+x(k)&=Ax(k-1)+bu(k-1)\\
+z(k)&=x(k)
+\end{align*}
+
+where we concentrate on the controller development by assuming perfect knowledge about the state.
+
+\mportant{$u(k)=Fx(k)=Fz(k)$}
+
+Thus the closed loop dynamics are:
+
+\mportant{$x(k)=(A+BF)x(k-1)$}
+
+Hence the system is stable iff $A+BF$ is stable. One can find such an $F$ only if $(A,B)$ is stabilizable.
+
+\begin{itemize}
+\item Pole placement design
+\item LQR
+
+\mportant{$J_{LQR}=\sum\limits_{k=0}^\infty x^T(k)\bar{Q}x(k)+u^T(k)\bar{R}u(k)$}
+
+where $\bar{Q}=\bar{Q}^T\geq 0$ and $\bar{R}=\bar{R}^T>0$ are weighting matrices.
+
+Assuming $(A,B)$ stabilizable and $(A,G)$ detectable with $\bar{Q}=GG^T$ the optimal stablizing controller is:
+
+\mportant{$F=-(B^TPB+\bar{R})^{-1}B^TPA$}
+
+where $P=P^T\geq 0$ is the unique positive semidefinite solution to the DARE.
+
+\mportant{$P=A^TPA+\bar{Q}-A^TPB(B^TPB+\bar{R})^{-1}B^TPA$}
+\end{itemize}
+
+\subsection{Separation Principle}
+
+\begin{align*}
+x(k)&=Ax(k-1)+Bu(k-1)\\
+z(k)&=Hx(k)
+\end{align*}
+
+\begin{align*}
+\hat{x}(k)&=A\hat{x}(k-1)+Bu(k-1)+K(z(k)-\hat{z}(k))\\
+\hat{z}(k)&=H(A\hat{x}(k-1)+Bu(k-1))\\
+u(k)&=F\hat{x}(k)
+\end{align*}
+
+Assume that $(I-KH)A$ and $(A+BF)$ are stable. Question: Is the overall system stable. 
+
+The error dynamics are:
+
+\mportant{$e(k)=(I-KH)Ae(k-1)$}
+
+And thus the state dynamics are: 
+
+\mportant{$x(k)=(A+BF)x(k-1)-BFe(k-1)$}
+
+Therefore the closed loop dynamics can be described as
+
+\mportant{$\begin{bmatrix}
+x(k)\\e(k)
+\end{bmatrix}=\begin{bmatrix}
+A+BF&-BF\\0&(I-KH)A
+\end{bmatrix}\begin{bmatrix}
+x(k-1)\\e(k-1)
+\end{bmatrix}$}
+
+\begin{itemize}
+\item The eigenvalues of the closed-loop dynamics are given by the eigenvalues of $(I-KH)A$ and $(A+BF)$. Therefore the overall system is stable. This is called the \textbf{separation principle}.
+\item Including the noise in the analysis does not affect stability.
+\item Under mild conditions the above analysis generalizes to the time-varying case.
+\item In general, the separation principle does \textbf{not} hold for nonlinear systems.
+\end{itemize}
+
+\subsection{Separation Theorem}
+
+\begin{align*}
+x(k)&=Ax(k-1)+Bu(k-1)+v(k-1)&v(k-1)\sim\mathcal{N}(0,Q)\\
+z(k)&=Hx(k)+w(k)&w(k)\sim\mathcal{N}(0,R)
+\end{align*}
+
+The control objective is to find the control policy that minimizes
+
+\mportant{$J_{LQG}=\lim\limits_{N\rightarrow\infty} E\left[\frac{1}{N}\sum\limits_{k=0}^{N-1}(x^T(k)\bar{Q}x(k)+u^t(k)\bar{R}u(k))\right]$}
+
+where $u(k)$ can depend on current and past measurements $z(1:k)$ (causal strategy).
+
+Then the optimal strategy:
+
+\begin{itemize}
+\item Design a steady-state KF (The filter does not depend on $\bar{Q}$ and $\bar{R}$). The filter provides an estimate $\hat{x}(k)$ of $x(k)$.
+\item Design an optimal state-feedback strategy $u(k)=Fx(k)$ for the determinable LQR problem.
+
+\mportant{$x(k)=Ax(k-1)+Bu(k-1)$}
+
+that minimizes
+
+\mportant{$J_{LQR}=\sum\limits_{k=0}^\infty x^T(k)\bar{Q}x(k)+u^T(k)\bar{R}u(k)$}
+
+The feedback gain does not dpeend on the noise statistics $Q$ and $R$.
+\item Put both together.
+\end{itemize}
+
+This control design is called Linear Quadratic Gaussian (LQG) control. 
+
+\end{multicols*}
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
