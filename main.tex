@@ -1,5 +1,5 @@
 %generation of assignment and solution in one .tex file. make sure that write18 is activated(--enable-write18 for example as you call pdflatex.exe)
-\gdef\conditionmacro{1}
+%\gdef\conditionmacro{2}
 \ifx\conditionmacro\undefined 
 %write long version first, let latex do the short version with the normal writing procedure
 \immediate\write18{%
@@ -49,12 +49,18 @@
 \author{GianAndrea Müller}
 
 \begin{document}
+
+\ifnum\conditionmacro=1
 \begin{multicols*}{4}
 \maketitle
 \tableofcontents
 \end{multicols*}
 
 \begin{multicols*}{2}
+\fi
+\ifnum\conditionmacro=2
+\begin{multicols*}{3}
+\fi
 
 \longversion{
 \section{Probability}
@@ -144,10 +150,12 @@ Random variables are said to be \textbf{conditionally independent} if: $p(x|y,z)
 
 \subsection{Continuous Random Variables (CRV)}
 
+\longversion{
 \begin{TDefinitionTable*}
 $\mathcal{X}$&subset of the real line\\
 $p(\cdot)$&PDF
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \begin{enumerate}
 \item $p_x(\bar{x})\geq 0\ \forall\bar{x}\in\mathcal{X}$
@@ -212,6 +220,7 @@ $\underset{x}{\text{Var}}[x]:=\underset{x}{E}\left[\left(x-\underset{x}{E}[x]\ri
 
 \section{Basics}
 
+\longversion{
 \sbss{
 \myspic{0.7}{Pictures/InputOutput}
 }{
@@ -223,6 +232,7 @@ $w$&sensor noise\\
 $x$&internal state\\
 \end{TDefinitionTable*}
 }
+}%longversion bracket
 
 \mportable{$x(k)$&$=q_{k-1}(x(k-1),u(k-1),v(k-1))$\\
 $z(k)$&$=h_k(x(k),w(k))$}
@@ -306,6 +316,7 @@ Equivalently solve $\frac{d\bar{x}}{d\bar{y}}=\frac{p_y(\bar{y})}{\hat{p}_x(\bar
 
 \importname{Bayes' Theorem}{$p(x|z)=\frac{p(y|z)p(x)}{p(z)}$}
 
+\longversion{
 \begin{TDefinitionTable*}
 $x$&unknown quantity of interest (state)\\
 $p(x)$&prior belief of state\\
@@ -314,6 +325,7 @@ $p(z|x)$&observation model\\
 $p(x|z)$&posterior belief of state\\
 $p(z)$&probability of the observation\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \subsection{Generalization to multiple observations}
 
@@ -332,10 +344,12 @@ $p(z)$&probability of the observation\\
 \mportable{$x(k)$&$q_{k-1}(x(k-1),v(k-1)),\quad k=1,2,\ldots$\\
 $z(k)$&$h_k(x(k),w(k))$}
 
+\longversion{
 \begin{TDefinitionTable*}
 $x(k)\in\mathcal{X}$&State\\
 $z(k)$&Measurement\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 Assume $p(x(k-1)|z(1:k-1))$ is known. For $k=1$: $p(x(0))$.
 
@@ -373,9 +387,11 @@ $\vec{a}_{k|k}^i$&$=\frac{p_{z(k)|x(k)}(\bar{z}(k)|i)\vec{a}_{k|k-1}^i}{\sum\lim
 
 \mportant{$\hat{x}^{ML}:=$arg$\max\limits_{\bar{x}\in\mathcal{X}}p_{z|x}(\bar{z}|\bar{x}$}
 
+\longversion{
 \begin{TDefinitionTable*}
 $p_{z|x}(\bar{z}|\bar{x})$&Observation model / likelihood function\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \subsubsection{Generalization}
 
@@ -447,6 +463,7 @@ x(x)&=A(k-1)x(k-1)+u(k-1)+v(k-1)\\
 z(k)&=H(k)x(k)+w(k)
 \end{align*}
 
+\longversion{
 \begin{TDefinitionTable*}
 $x(k)$&state\\
 $u(k)$&known control input\\
@@ -454,15 +471,18 @@ $v(k)$&process noise\\
 $z(k)$&measurement\\
 $w(k)$&sensor noise\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \subsection{Gaussian Random Variable (GRV)}
 
 \mportant{$p(y)=\frac{1}{(2\pi)^{D/2}\det(\Sigma)^{1/2}}\exp\left(-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(y-\mu)\right)\qquad y\sim\mathcal{N}(\mu,\Sigma)$}
 
+\longversion{
 \begin{TDefinitionTable*}
 $\mu\in\mathbb{R}^D$&mean vector\\
 $\Sigma\in\mathbb{R}^{D\times D}$&symmetric, positive definite, variance matrix\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 If $\Sigma$ is diagonal we can say:
 
@@ -489,10 +509,12 @@ x-\mu_x\\y-\mu_y
 
 Application of bayesian tracking to CRVs.
 
+\longversion{
 \begin{TDefinitionTable*}
 $m$&measurement / measurement update\\
 $p$&prediction\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \begin{tabular}{llll}
 \textbf{Init:}&$x_m(0):=x(0)$\\
@@ -522,12 +544,14 @@ $p$&prediction\\
 &$\hat{x}_m(k)=\hat{x}_p(k)+P_m(k)H^T(k)R^{-1}(k)(\bar{z}(k)-H(k)\hat{x}_p(k))$
 \end{tabular}
 
+\longversion{
 \begin{TDefinitionTable*}
 $P_0$&Variance matrix of the initial state\\
 $Q$&Variance matrix of the noise\\
 $R$&Variance matrix of the disturbance\\
 $H$&Output matrix
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \subsubsection{Alternative Formulation}
 
@@ -751,12 +775,14 @@ where $x(0),\{v(\cdot)\},\{w(\cdot)\}$ are mutually independent and can be discr
 
 \subsubsection{Discrete Random Variables}
 
+\longversion{
 \begin{TDefinitionTable*}
 $y$&DRV in $\mathcal{Y}=\{1,2,\ldots,\bar{Y}\}$\\
 $p_y$&PDF of $y$\\
 $\{y^1,y^2,\ldots,y^N\}$&collection of $N$ DRVs\\
 $s_i^n$&samples of DRVs\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \mportant{$s_i^n:=\delta(i-y^n)=\begin{cases}1&\text{ if }y^n=i\\0&\text{ otherwise}\end{cases}$}
 
@@ -782,6 +808,7 @@ where $\zeta$ and $\bar{x}^n$ are now vectors and $\delta(\cdot)$ refers to the 
 
 \subsubsection{Continuous Random Variables}
 
+\longversion{
 \begin{TDefinitionTable*}
 $y$&CRV\\
 $p_y$&PDF of $y$\\
@@ -789,6 +816,7 @@ $\Delta y$&fixed bin size\\
 $\{y^1,y^2,\ldots,y^n\}$&collection of N CRVs\\
 $s_a^n$&samples of CRVs\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \mportant{$s_y^n:=\int_a^{a+\Delta y}\delta(\zeta-y^n)d\zeta=\begin{cases}1&\text{ if }a\leq y^n <a+\Delta y\\0&\text{ otherwise}\end{cases}$}
 
@@ -816,12 +844,14 @@ x_m(k)&\text{defined via its PDF}\\
 
 \subsubsection{Prior Update}
 
+\longversion{
 \begin{TDefinitionTable*}
 $p_{x_m(k-1)}$&PDF of $x_m(k-1)$\\
 $p_{x_p(k)}$&PDF of $x_p(k)$\\
 $\{\bar{x}_m^n(k-1)\}$&$N$ particles\\
 $\bar{v}^n(k-1)$&MC samples of $p_{v(k-1)}$\\
 \end{TDefinitionTable*}
+}%longversion bracket
 
 \mportant{$p_{x_m(k-1)}(\zeta)\approx\frac{1}{N}\sum\limits_{n=1}^N\delta(\zeta-\bar{x}_m^n(k-1)),\ \forall\zeta$}
 
@@ -865,6 +895,7 @@ where $\Delta x^n(k)$ is drawn from a zero-mean, finite-variance distribution.
 
 \mportant{$\sigma_i=KE_iN^{-\frac{1}{d}}$}
 
+\longversion{
 \begin{TDefinitionTable*}
 $\sigma_i$&standard Deviation of $\Delta x_i^n(k)$\\
 $K$&tuning parameter, typically K$ll$1\\
@@ -872,6 +903,7 @@ $d$&dimension of the state space\\
 $E_i:\max\limits_{n_1,n_2}|\bar{x}_{m,i}^{n_2}(k)-\bar{x}_{m,i}^{n_2}d(k)|$&the maximum inter-sample variability\\
 $N^{-\frac{1}{d}}$&related to the spacing between nodes of a uniform grid\\
 \end{TDefinitionTable*}
+}%longversion bracket
 \end{itemize}
 
 \section{Observer-Based Control}
